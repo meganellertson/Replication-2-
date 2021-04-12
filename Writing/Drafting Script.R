@@ -147,3 +147,59 @@ nsw_dw_cpscontrol_ols %>%
   ggplot() +
   geom_histogram(aes(x = pscore))
 
+##Differencing and weighting LOGIT
+#- Manual with non-normalized weights using trimmed data
+nsw_dw_cpscontrol_logit <- nsw_dw_cpscontrol_logit %>% 
+  mutate(d1 = treat/pscore,
+         d0 = (1-treat)/(1-pscore))
+
+s1 <- sum(nsw_dw_cpscontrol_logit$d1)
+s0 <- sum(nsw_dw_cpscontrol_logit$d0)
+
+nsw_dw_cpscontrol_logit <- nsw_dw_cpscontrol_logit %>% 
+  mutate(y1 = treat * re78/pscore,
+         y0 = (1-treat) * re78/(1-pscore),
+         ht = y1 - y0)
+
+#- Manual with normalized weights with trimmed data
+nsw_dw_cpscontrol_logit <- nsw_dw_cpscontrol_logit %>% 
+  mutate(y1 = (treat*re78/pscore)/(s1/Nl),
+         y0 = ((1-treat)*re78/(1-pscore))/(s0/Nl),
+         norm = y1 - y0)
+
+nsw_dw_cpscontrol_logit %>% 
+  pull(ht) %>% 
+  mean()
+
+nsw_dw_cpscontrol_logit %>% 
+  pull(norm) %>% 
+  mean()
+
+##Differencing and weighting OLS 
+
+#- Manual with non-normalized weights using trimmed data
+nsw_dw_cpscontrol_ols <- nsw_dw_cpscontrol_ols %>% 
+  mutate(d1 = treat/pscore,
+         d0 = (1-treat)/(1-pscore))
+
+s1 <- sum(nsw_dw_cpscontrol_ols$d1)
+s0 <- sum(nsw_dw_cpscontrol_ols$d0)
+
+nsw_dw_cpscontrol_ols <- nsw_dw_cpscontrol_ols %>% 
+  mutate(y1 = treat * re78/pscore,
+         y0 = (1-treat) * re78/(1-pscore),
+         ht = y1 - y0)
+
+#- Manual with normalized weights with trimmed data
+nsw_dw_cpscontrol_ols <- nsw_dw_cpscontrol_ols %>% 
+  mutate(y1 = (treat*re78/pscore)/(s1/No),
+         y0 = ((1-treat)*re78/(1-pscore))/(s0/No),
+         norm = y1 - y0)
+
+nsw_dw_cpscontrol_ols %>% 
+  pull(ht) %>% 
+  mean()
+
+nsw_dw_cpscontrol_ols %>% 
+  pull(norm) %>% 
+  mean()
