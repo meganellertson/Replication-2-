@@ -14,8 +14,7 @@ cps_mixtape <- read_dta("Data/cps_mixtape.dta")
 nsw_mixtape <- read_dta("Data/nsw_mixtape.dta")
 dataset <- read_dta("Data/combineddata.dta")
 
-nsw_dw_cpscontrol <- read_data("cps_mixtape.dta") %>% 
-  bind_rows(nsw_dw) %>% 
+nsw_dw_cpscontrol <- dataset %>% 
   mutate(agesq = age^2,
          agecube = age^3,
          educsq = educ*educ,
@@ -25,7 +24,6 @@ nsw_dw_cpscontrol <- read_data("cps_mixtape.dta") %>%
          re74sq = re74^2,
          re75sq = re75^2,
          interaction2 = u74*hisp)
-
 #Creating logit data 
 nsw_dw_cpscontrol_logit <- nsw_dw_cpscontrol %>%
   mutate(educcube = educ^3,
@@ -33,20 +31,15 @@ nsw_dw_cpscontrol_logit <- nsw_dw_cpscontrol %>%
          re75cube=re75^3)
 #Creating ols data
 nsw_dw_cpscontrol_ols <- nsw_dw_cpscontrol %>%
-  mutate(educcube = educ^3,
-         educquad = educ^4,
-         agequad = age^4,
-         re74cube = re74^3,
-         re74quad = re74^4, 
-         re75cube = re75^3, 
-         re75quad = re75^4)
+  mutate()
+
 # basic logit model
 logit_nsw_basic <- glm(treat ~ age + agesq + agecube + educ + educsq + 
                    marr + nodegree + black + hisp + re74 + re75 + u74 +
                    u75 + interaction1, family = binomial(link = "logit"), 
                  data = nsw_dw_cpscontrol_logit)
 # advanced logit model 
-logit_nsw_adv <- glm(treat ~ age + agesq + agecube + educ 
+logit_nsw_adv <- glm(treat ~ age + agesq + agecube + educ + educsq
                      + educcube + marr + nodegree
                      + black + hisp + re74 + re74sq + re74cube 
                      + re75 + re75sq + re75cube + u74 + u75 +
@@ -55,39 +48,38 @@ logit_nsw_adv <- glm(treat ~ age + agesq + agecube + educ
 #basic ols model link thing? 
 ols_nsw_basic <- lm(treat ~ age + agesq + agecube + educ + educsq + 
                          marr + nodegree + black + hisp + re74 + re75 + u74 +
-                         u75 + interaction1, family = binomial(link = "ols"), 
+                         u75 + interaction1, 
                        data = nsw_dw_cpscontrol_ols)
 # advanced ols model link thing?
-ols_nsw_adv <- lm(treat ~ age + agesq + agecube + agequad + educ 
-                     + educcube + educquad + marr + nodegree
-                     + black + hisp + re74 + re74sq + re74cube + re74quad
-                     + re75 + re75sq + re75cube + re75quad + u74 + u75 +
-                       interaction1, family = binomial(link = "ols"),
-                     data = nsw_dw_cpscontrol_ols)
+ols_nsw_adv <- lm(treat ~ age + agesq + agecube + educ + marr + 
+                    nodegree+ black + hisp + re74 + re74sq
+                     + re75 + re75sq + u74 + u75 + interaction1,
+                  data = nsw_dw_cpscontrol_ols)
 
 #Creating fitted values and pscores 
 nsw_dw_cpscontrol_logit <- nsw_dw_cpscontrol_logit %>% 
   mutate(pscore = logit_nsw_adv$fitted.values)
+
 
 nsw_dw_cpscontrol_ols <- nsw_dw_cpscontrol_ols %>% 
   mutate(pscore = ols_nsw_adv$fitted.values)
 
 # mean pscores 
 
-pscore_control_logit <- nsq_dw_cpscontrol_logit %>%
+pscore_control_logit <- nsw_dw_cpscontrol_logit %>%
   filter(treat==0) %>%
   pull(pscore) %>%
   mean()
-pscore_control_logit <- nsq_dw_cpscontrol_logit %>%
+pscore_control_logit <- nsw_dw_cpscontrol_logit %>%
   filter(treat==1) %>%
   pull(pscore) %>%
   mean()
 
-pscore_control_ols <- nsq_dw_cpscontrol_ols %>%
+pscore_control_ols <- nsw_dw_cpscontrol_ols %>%
   filter(treat==0) %>%
   pull(pscore) %>%
   mean()
-pscore_control_ols <- nsq_dw_cpscontrol_ols %>%
+pscore_control_ols <- nsw_dw_cpscontrol_ols %>%
   filter(treat==1) %>%
   pull(pscore) %>%
   mean()
@@ -126,6 +118,24 @@ nsw_dw_cpscontrol_ols <- nsw_dw_cpscontrol_ols %>%
 
 No <- nrow(nsw_dw_cpscontrol_ols)
 
+## Redo means
+pscore_control_logit <- nsw_dw_cpscontrol_logit %>%
+  filter(treat==0) %>%
+  pull(pscore) %>%
+  mean()
+pscore_control_logit <- nsw_dw_cpscontrol_logit %>%
+  filter(treat==1) %>%
+  pull(pscore) %>%
+  mean()
+
+pscore_control_ols <- nsw_dw_cpscontrol_ols %>%
+  filter(treat==0) %>%
+  pull(pscore) %>%
+  mean()
+pscore_control_ols <- nsw_dw_cpscontrol_ols %>%
+  filter(treat==1) %>%
+  pull(pscore) %>%
+  mean()
 ## Redo Histograms
 
 nsw_dw_cpscontrol_logit %>% 
