@@ -112,3 +112,38 @@ nsw_dw_cpscontrol_ols %>%
   ggplot() +
   geom_histogram(aes(x = pscore))
 
+## Dropping the ends 
+nsw_dw_cpscontrol_logit <- nsw_dw_cpscontrol_logit %>% 
+  filter(!(pscore >= 0.9)) %>% 
+  filter(!(pscore <= 0.1))
+
+Nl <- nrow(nsw_dw_cpscontrol_logit)
+
+nsw_dw_cpscontrol_ols <- nsw_dw_cpscontrol_ols %>% 
+  filter(!(pscore >= 0.9)) %>% 
+  filter(!(pscore <= 0.1))
+
+No <- nrow(nsw_dw_cpscontrol_ols)
+
+## Redo Histograms
+
+nsw_dw_cpscontrol_logit %>% 
+  filter(treat == 0) %>% 
+  ggplot() +
+  geom_histogram(aes(x = pscore))
+
+nsw_dw_cpscontrol_logit %>% 
+  filter(treat == 1) %>% 
+  ggplot() +
+  geom_histogram(aes(x = pscore))
+
+nsw_dw_cpscontrol_ols %>% 
+  filter(treat == 0) %>% 
+  ggplot() +
+  geom_histogram(aes(x = pscore))
+
+nsw_dw_cpscontrol_ols %>% 
+  filter(treat == 1) %>% 
+  ggplot() +
+  geom_histogram(aes(x = pscore))
+
