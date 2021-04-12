@@ -43,7 +43,7 @@ nsw_dw_cpscontrol_ols <- nsw_dw_cpscontrol %>%
 logit_nsw_basic <- glm(treat ~ age + agesq + agecube + educ + educsq + 
                    marr + nodegree + black + hisp + re74 + re75 + u74 +
                    u75 + interaction1, family = binomial(link = "logit"), 
-                 data = nsw_dw_cpscontrol)
+                 data = nsw_dw_cpscontrol_logit)
 # advanced logit model 
 logit_nsw_adv <- glm(treat ~ age + agesq + agecube + educ 
                      + educcube + marr + nodegree
@@ -55,7 +55,7 @@ logit_nsw_adv <- glm(treat ~ age + agesq + agecube + educ
 ols_nsw_basic <- lm(treat ~ age + agesq + agecube + educ + educsq + 
                          marr + nodegree + black + hisp + re74 + re75 + u74 +
                          u75 + interaction1, family = binomial(link = "ols"), 
-                       data = nsw_dw_cpscontrol)
+                       data = nsw_dw_cpscontrol_ols)
 # advanced ols model link thing?
 ols_nsw_adv <- lm(treat ~ age + agesq + agecube + agequad + educ 
                      + educcube + educquad + marr + nodegree
@@ -63,4 +63,11 @@ ols_nsw_adv <- lm(treat ~ age + agesq + agecube + agequad + educ
                      + re75 + re75sq + re75cube + re75quad + u74 + u75 +
                        interaction1, family = binomial(link = "ols"),
                      data = nsw_dw_cpscontrol_ols)
+
+#Creating fitted values and pscores 
+nsw_dw_cpscontrol_logit <- nsw_dw_cpscontrol_logit %>% 
+  mutate(pscore = logit_nsw_adv$fitted.values)
+
+nsw_dw_cpscontrol_ols <- nsw_dw_cpscontrol_ols %>% 
+  mutate(pscore = ols_nsw_adv$fitted.values)
 
