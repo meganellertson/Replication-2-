@@ -31,7 +31,8 @@ nsw_dw_cpscontrol_logit <- nsw_dw_cpscontrol %>%
          re75cube=re75^3)
 #Creating ols data
 nsw_dw_cpscontrol_ols <- nsw_dw_cpscontrol %>%
-  mutate()
+  mutate(re74quad = re74^4,
+         re75quad = re74^4)
 
 # basic logit model
 logit_nsw_basic <- glm(treat ~ age + agesq + agecube + educ + educsq + 
@@ -45,12 +46,12 @@ logit_nsw_adv <- glm(treat ~ age + agesq + agecube + educ + educsq
                      + re75 + re75sq + re75cube + u74 + u75 +
                        interaction1, family = binomial(link = "logit"),
                      data = nsw_dw_cpscontrol_logit)
-#basic ols model link thing? 
+#basic ols model 
 ols_nsw_basic <- lm(treat ~ age + agesq + agecube + educ + educsq + 
                          marr + nodegree + black + hisp + re74 + re75 + u74 +
                          u75 + interaction1, 
                        data = nsw_dw_cpscontrol_ols)
-# advanced ols model link thing?
+# advanced ols model
 ols_nsw_adv <- lm(treat ~ age + agesq + agecube + educ + marr + 
                     nodegree+ black + hisp + re74 + re74sq
                      + re75 + re75sq + u74 + u75 + interaction1,
