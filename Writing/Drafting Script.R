@@ -71,3 +71,44 @@ nsw_dw_cpscontrol_logit <- nsw_dw_cpscontrol_logit %>%
 nsw_dw_cpscontrol_ols <- nsw_dw_cpscontrol_ols %>% 
   mutate(pscore = ols_nsw_adv$fitted.values)
 
+# mean pscores 
+
+pscore_control_logit <- nsq_dw_cpscontrol_logit %>%
+  filter(treat==0) %>%
+  pull(pscore) %>%
+  mean()
+pscore_control_logit <- nsq_dw_cpscontrol_logit %>%
+  filter(treat==1) %>%
+  pull(pscore) %>%
+  mean()
+
+pscore_control_ols <- nsq_dw_cpscontrol_ols %>%
+  filter(treat==0) %>%
+  pull(pscore) %>%
+  mean()
+pscore_control_ols <- nsq_dw_cpscontrol_ols %>%
+  filter(treat==1) %>%
+  pull(pscore) %>%
+  mean()
+
+#Histograms 
+nsw_dw_cpscontrol_logit %>% 
+  filter(treat == 0) %>% 
+  ggplot() +
+  geom_histogram(aes(x = pscore))
+
+nsw_dw_cpscontrol_logit %>% 
+  filter(treat == 1) %>% 
+  ggplot() +
+  geom_histogram(aes(x = pscore))
+
+nsw_dw_cpscontrol_ols %>% 
+  filter(treat == 0) %>% 
+  ggplot() +
+  geom_histogram(aes(x = pscore))
+
+nsw_dw_cpscontrol_ols %>% 
+  filter(treat == 1) %>% 
+  ggplot() +
+  geom_histogram(aes(x = pscore))
+
