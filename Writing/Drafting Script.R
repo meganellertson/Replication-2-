@@ -12,6 +12,7 @@ read_data <- function(df)
 
 cps_mixtape <- read_dta("Data/cps_mixtape.dta")
 nsw_mixtape <- read_dta("Data/nsw_mixtape.dta")
+dataset <- read_dta("Data/combineddata.dta")
 
 nsw_dw_cpscontrol <- read_data("cps_mixtape.dta") %>% 
   bind_rows(nsw_dw) %>% 
