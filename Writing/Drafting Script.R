@@ -4,7 +4,7 @@ library(haven)
 
 read_data <- function(df)
 {
-  full_path <- paste("https://raw.github.com/scunning1975/mixtape/master/", 
+  full_path <- paste("https://raw.github.com/meganellertson/Replication-2-/", 
                      df, sep = "")
   df <- read_dta(full_path)
   return(df)
@@ -40,7 +40,7 @@ logit_nsw_basic <- glm(treat ~ age + agesq + agecube + educ + educsq +
                    u75 + interaction1, family = binomial(link = "logit"), 
                  data = nsw_dw_cpscontrol_logit)
 # advanced logit model 
-logit_nsw_adv <- glm(treat ~ age + agesq + agecube + educ + educsq
+logit <- glm(treat ~ age + agesq + agecube + educ + educsq
                      + educcube + marr + nodegree
                      + black + hisp + re74 + re74sq + re74cube 
                      + re75 + re75sq + re75cube + u74 + u75 +
@@ -52,18 +52,18 @@ ols_nsw_basic <- lm(treat ~ age + agesq + agecube + educ + educsq +
                          u75 + interaction1, 
                        data = nsw_dw_cpscontrol_ols)
 # advanced ols model
-ols_nsw_adv <- lm(treat ~ age + agesq + agecube + educ + marr + 
+ols <- lm(treat ~ age + agesq + agecube + educ + marr + 
                     nodegree+ black + hisp + re74 + re74sq
                      + re75 + re75sq + u74 + u75 + interaction1,
                   data = nsw_dw_cpscontrol_ols)
 
 #Creating fitted values and pscores 
 nsw_dw_cpscontrol_logit <- nsw_dw_cpscontrol_logit %>% 
-  mutate(pscore = logit_nsw_adv$fitted.values)
+  mutate(pscore = logit$fitted.values)
 
 
 nsw_dw_cpscontrol_ols <- nsw_dw_cpscontrol_ols %>% 
-  mutate(pscore = ols_nsw_adv$fitted.values)
+  mutate(pscore = ols$fitted.values)
 
 # mean pscores 
 
@@ -215,3 +215,10 @@ nsw_dw_cpscontrol_ols %>%
 nsw_dw_cpscontrol_ols %>% 
   pull(norm) %>% 
   mean()
+
+
+```{stata}
+use https://github.com/scunning1975/mixtape/raw/master/nsw_mixtape.dta, clear
+drop if treat==0
+append using https://github.com/scunning1975/mixtape/raw/master/cps_mixtape.dta
+```
