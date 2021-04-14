@@ -113,6 +113,7 @@ nsw_dw_cpscontrol_logit <- nsw_dw_cpscontrol_logit %>%
 
 Nl <- nrow(nsw_dw_cpscontrol_logit)
 
+
 nsw_dw_cpscontrol_ols <- nsw_dw_cpscontrol_ols %>% 
   filter(!(pscore >= 0.9)) %>% 
   filter(!(pscore <= 0.1))
@@ -159,6 +160,55 @@ nsw_dw_cpscontrol_ols %>%
   ggplot() +
   geom_histogram(aes(x = pscore))
 
+##ATE Logit 
+nsw_dw_cpscontrol_logit %>% 
+  filter(treat == 1) %>% 
+  summary(re78)
+
+mean1log <- nsw_dw_cpscontrol_logit %>% 
+  filter(treat == 1) %>% 
+  pull(re78) %>% 
+  mean()
+
+nsw_dw_cpscontrol_logit$y1 <- mean1log
+
+nsw_dw_cpscontrol_logit %>% 
+  filter(treat == 0) %>% 
+  summary(re78)
+
+mean0log <- nsw_dw_cpscontrol_logit %>% 
+  filter(treat == 0) %>% 
+  pull(re78) %>% 
+  mean()
+
+nsw_dw_cpscontrol_logit$y0 <- mean0log
+
+atelog <- unique(nsw_dw_cpscontrol_logit$y1 - nsw_dw_cpscontrol_logit$y0)
+
+## ATE OLS 
+nsw_dw_cpscontrol_ols %>% 
+  filter(treat == 1) %>% 
+  summary(re78)
+
+mean1ols <- nsw_dw_cpscontrol_ols %>% 
+  filter(treat == 1) %>% 
+  pull(re78) %>% 
+  mean()
+
+nsw_dw_cpscontrol_ols$y1 <- mean1ols
+
+nsw_dw_cpscontrol_ols %>% 
+  filter(treat == 0) %>% 
+  summary(re78)
+
+mean0ols <- nsw_dw_cpscontrol_ols %>% 
+  filter(treat == 0) %>% 
+  pull(re78) %>% 
+  mean()
+
+nsw_dw_cpscontrol_ols$y0 <- mean00ls
+
+ateols <- unique(nsw_dw_cpscontrol_ols$y1 - nsw_dw_cpscontrol_ols$y0)
 ##Differencing and weighting LOGIT
 #- Manual with non-normalized weights using trimmed data
 nsw_dw_cpscontrol_logit <- nsw_dw_cpscontrol_logit %>% 
@@ -222,3 +272,74 @@ use https://github.com/scunning1975/mixtape/raw/master/nsw_mixtape.dta, clear
 drop if treat==0
 append using https://github.com/scunning1975/mixtape/raw/master/cps_mixtape.dta
 ```
+## Maybe this needs to be used for question 2
+library(tidyverse)
+library(haven)
+
+read_data <- function(df)
+{
+  full_path <- paste("https://raw.github.com/scunning1975/mixtape/master/", 
+                     df, sep = "")
+  df <- read_dta(full_path)
+  return(df)
+}
+
+nsw_dw <- read_data("nsw_mixtape.dta")
+
+nsw_dw %>% 
+  filter(treat == 1) %>% 
+  summary(re78)
+
+mean1 <- nsw_dw %>% 
+  filter(treat == 1) %>% 
+  pull(re78) %>% 
+  mean()
+
+nsw_dw$y1 <- mean1
+
+nsw_dw %>% 
+  filter(treat == 0) %>% 
+  summary(re78)
+
+mean0 <- nsw_dw %>% 
+  filter(treat == 0) %>% 
+  pull(re78) %>% 
+  mean()
+
+nsw_dw$y0 <- mean0
+
+ate <- unique(nsw_dw$y1 - nsw_dw$y0)
+
+nsw_dw <- nsw_dw %>% 
+  filter(treat == 1) %>% 
+  select(-y1, -y0)
+
+# Combined data
+
+dataset %>% 
+  filter(treat == 1) %>% 
+  summary(re78)
+
+mean1 <- dataset %>% 
+  filter(treat == 1) %>% 
+  pull(re78) %>% 
+  mean()
+
+dataset$y1 <- mean1
+
+dataset %>% 
+  filter(treat == 0) %>% 
+  summary(re78)
+
+mean0 <- dataset %>% 
+  filter(treat == 0) %>% 
+  pull(re78) %>% 
+  mean()
+
+dataset$y0 <- mean0
+
+ate <- unique(dataset$y1 - dataset$y0)
+
+dataset <- dataset %>% 
+  filter(treat == 1) %>% 
+  select(-y1, -y0)
