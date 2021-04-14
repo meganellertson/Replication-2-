@@ -108,7 +108,7 @@ pscore_control_ols <- nsw_dw_cpscontrol_ols %>%
   pull(pscore) %>%
   mean()
 ```
-
+Histogram of the logit p-score's. 
 ```{r}
 nsw_dw_cpscontrol_logit %>% 
   filter(treat == 0) %>% 
@@ -119,6 +119,9 @@ nsw_dw_cpscontrol_logit %>%
   filter(treat == 1) %>% 
   ggplot() +
   geom_histogram(aes(x = pscore))
+```
+Histogram of the ols p-score's
+```{r}
 
 nsw_dw_cpscontrol_ols %>% 
   filter(treat == 0) %>% 
@@ -167,9 +170,8 @@ pscore_control_ols <- nsw_dw_cpscontrol_ols %>%
   mean()
 ```
 
+Trimmed data histogram of logit p-score's
 ```{r}
-## Redo Histograms
-
 nsw_dw_cpscontrol_logit %>% 
   filter(treat == 0) %>% 
   ggplot() +
@@ -179,6 +181,9 @@ nsw_dw_cpscontrol_logit %>%
   filter(treat == 1) %>% 
   ggplot() +
   geom_histogram(aes(x = pscore))
+```
+Trimmed data histogram of ols p-score's
+```{r}
 
 nsw_dw_cpscontrol_ols %>% 
   filter(treat == 0) %>% 
