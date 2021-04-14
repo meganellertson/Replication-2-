@@ -196,6 +196,7 @@ nsw_dw_cpscontrol_ols %>%
 ```
 DESCRIBE THE SHAPE OF THE HISTOGRAMS, THE MIN AND MAX VALUES OF BOTH THE CONTROL AND TREATMENT GROUP. 
 
+The following is the 
 ```{r}
 #- Manual with non-normalized weights using trimmed data Logit
 nsw_dw_cpscontrol_logit <- nsw_dw_cpscontrol_logit %>% 
