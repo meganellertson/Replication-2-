@@ -108,7 +108,7 @@ pscore_control_ols <- nsw_dw_cpscontrol_ols %>%
   pull(pscore) %>%
   mean()
 ```
-Histogram of the logit p-score's. 
+1.c. The following are the histograms for the mean p-scores of the logit and ols models for both models treated and untreated groups. 
 ```{r}
 nsw_dw_cpscontrol_logit %>% 
   filter(treat == 0) %>% 
@@ -120,7 +120,7 @@ nsw_dw_cpscontrol_logit %>%
   ggplot() +
   geom_histogram(aes(x = pscore))
 ```
-Histogram of the ols p-score's
+
 ```{r}
 
 nsw_dw_cpscontrol_ols %>% 
@@ -133,8 +133,8 @@ nsw_dw_cpscontrol_ols %>%
   ggplot() +
   geom_histogram(aes(x = pscore))
 ```
-
-
+DISCUSS THE SHAPE AND DISTRIBUTIONMN AND MAX VALUES FOR TREATMENT GROUP AND THE CONTROL GROUPS. 
+1.d. The pscores which are less than 0.1 and greater than 0.9 can then be dropped and the histograms recalibarated with the trimmed pscores. 
 ```{r}
 nsw_dw_cpscontrol_logit <- nsw_dw_cpscontrol_logit %>% 
   filter(!(pscore >= 0.9)) %>% 
@@ -150,7 +150,7 @@ No <- nrow(nsw_dw_cpscontrol_ols)
 ```
 
 ```{r}
-## Redo means
+
 pscore_control_logit <- nsw_dw_cpscontrol_logit %>%
   filter(treat==0) %>%
   pull(pscore) %>%
@@ -170,7 +170,6 @@ pscore_control_ols <- nsw_dw_cpscontrol_ols %>%
   mean()
 ```
 
-Trimmed data histogram of logit p-score's
 ```{r}
 nsw_dw_cpscontrol_logit %>% 
   filter(treat == 0) %>% 
@@ -182,7 +181,7 @@ nsw_dw_cpscontrol_logit %>%
   ggplot() +
   geom_histogram(aes(x = pscore))
 ```
-Trimmed data histogram of ols p-score's
+
 ```{r}
 
 nsw_dw_cpscontrol_ols %>% 
@@ -195,6 +194,7 @@ nsw_dw_cpscontrol_ols %>%
   ggplot() +
   geom_histogram(aes(x = pscore))
 ```
+DESCRIBE THE SHAPE OF THE HISTOGRAMS, THE MIN AND MAX VALUES OF BOTH THE CONTROL AND TREATMENT GROUP. 
 
 ```{r}
 #- Manual with non-normalized weights using trimmed data Logit
