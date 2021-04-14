@@ -13,24 +13,15 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 library(tidyverse)
 library(haven)
+library(stargazer)
+library(foreign)
 ```
 *The data combined was completed in STATA then brought into R for quicker computation. See the following STATA syntax, which was used to create the combined and used data set for the analysis.*
-```{stata}
-use https://github.com/scunning1975/mixtape/raw/master/nsw_mixtape.dta, clear
-drop if treat==0
-append using https://github.com/scunning1975/mixtape/raw/master/cps_mixtape.dta
-```
+
 
 ```{r}
-read_data <- function(df)
-{
-  full_path <- paste("https://raw.github.com/scunning1975/mixtape/master/", 
-                     df, sep = "")
-  df <- read_dta(full_path)
-  return(df)
-  dataset <- read_dta("Data/combineddata.dta")
-}
 
+dataset <- read.dta("Replication -2-/Data/combineddata.dta")
 ```
 
 ```{r}
@@ -60,7 +51,7 @@ a. The following equations are for the logit and OLS versions of the basic equat
 $$logit(treat)= age + age^2 + age^3 + educ + educ^2 + + educ^3 +marr + nodegree + black + 
 hisp + re74 + re74^2 + re74^3 + re75 + re75^2 + re75^3 + u74 + u75 + educ*hisp + \epsilon$$
 ```{r}
-logit_nsw_adv <- glm(treat ~ age + agesq + agecube + educ + educsq
+logit <- glm(treat ~ age + agesq + agecube + educ + educsq
                      + educcube + marr + nodegree
                      + black + hisp + re74 + re74sq + re74cube 
                      + re75 + re75sq + re75cube + u74 + u75 +
@@ -71,19 +62,30 @@ $$ols(treat) = age + age^2 + educ + educ^2 + marr + nodegree + black +
 hisp + re74 + re74^2 + re75 + re75^2 + u74 + u75 + educ*hisp + \epsilon$$
 
 ```{r}
-ols_nsw_adv <- lm(treat ~ age + agesq + agecube + educ + marr + 
+ols <- lm(treat ~ age + agesq + agecube + educ + marr + 
                     nodegree+ black + hisp + re74 + re74sq
                      + re75 + re75sq + u74 + u75 + interaction1,
                   data = nsw_dw_cpscontrol_ols)
 ```
-*include table with ols and logit output*
+The following table provides the output of both the OLS and the Logit regression estimates from the equations above. 
+```{r}
+stargazer(ols, logit, 
+          type = "html",
+          title = ,
+          column.labels = c(""),
+          colnames = FALSE,
+          covariate.labels = c(""),
+          keep.state = c("rsq", "f"),
+          )
+```
+
 ```{r}
 nsw_dw_cpscontrol_logit <- nsw_dw_cpscontrol_logit %>% 
-  mutate(pscore = logit_nsw_adv$fitted.values)
+  mutate(pscore = logit$fitted.values)
 
 
 nsw_dw_cpscontrol_ols <- nsw_dw_cpscontrol_ols %>% 
-  mutate(pscore = ols_nsw_adv$fitted.values)
+  mutate(pscore = ols$fitted.values)
 ```
 
 
