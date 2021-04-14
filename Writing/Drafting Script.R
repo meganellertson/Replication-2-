@@ -56,7 +56,7 @@ ols <- lm(treat ~ age + agesq + agecube + educ + marr +
                     nodegree+ black + hisp + re74 + re74sq
                      + re75 + re75sq + u74 + u75 + interaction1,
                   data = nsw_dw_cpscontrol_ols)
-
+#1c.
 #Creating fitted values and pscores 
 nsw_dw_cpscontrol_logit <- nsw_dw_cpscontrol_logit %>% 
   mutate(pscore = logit$fitted.values)
@@ -105,7 +105,7 @@ nsw_dw_cpscontrol_ols %>%
   filter(treat == 1) %>% 
   ggplot() +
   geom_histogram(aes(x = pscore))
-
+#1c
 ## Dropping the ends 
 nsw_dw_cpscontrol_logit <- nsw_dw_cpscontrol_logit %>% 
   filter(!(pscore >= 0.9)) %>% 
@@ -159,7 +159,7 @@ nsw_dw_cpscontrol_ols %>%
   filter(treat == 1) %>% 
   ggplot() +
   geom_histogram(aes(x = pscore))
-
+#2
 ##ATE Logit 
 nsw_dw_cpscontrol_logit %>% 
   filter(treat == 1) %>% 
@@ -209,6 +209,8 @@ mean0ols <- nsw_dw_cpscontrol_ols %>%
 nsw_dw_cpscontrol_ols$y0 <- mean00ls
 
 ateols <- unique(nsw_dw_cpscontrol_ols$y1 - nsw_dw_cpscontrol_ols$y0)
+
+#3
 ##Differencing and weighting LOGIT
 #- Manual with non-normalized weights using trimmed data
 nsw_dw_cpscontrol_logit <- nsw_dw_cpscontrol_logit %>% 
