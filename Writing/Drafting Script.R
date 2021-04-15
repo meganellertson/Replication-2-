@@ -72,7 +72,7 @@ pscore_control_logit <- nsw_dw_cpscontrol_logit %>%
   filter(treat==0) %>%
   pull(pscore) %>%
   mean()
-pscore_control_logit <- nsw_dw_cpscontrol_logit %>%
+pscore_treat_logit <- nsw_dw_cpscontrol_logit %>%
   filter(treat==1) %>%
   pull(pscore) %>%
   mean()
@@ -81,10 +81,12 @@ pscore_control_ols <- nsw_dw_cpscontrol_ols %>%
   filter(treat==0) %>%
   pull(pscore) %>%
   mean()
-pscore_control_ols <- nsw_dw_cpscontrol_ols %>%
+pscore_treat_ols <- nsw_dw_cpscontrol_ols %>%
   filter(treat==1) %>%
   pull(pscore) %>%
   mean()
+
+
 
 #Histograms 
 nsw_dw_cpscontrol_logit %>% 
@@ -122,20 +124,20 @@ nsw_dw_cpscontrol_ols <- nsw_dw_cpscontrol_ols %>%
 No <- nrow(nsw_dw_cpscontrol_ols)
 
 ## Redo means
-pscore_control_logit <- nsw_dw_cpscontrol_logit %>%
+pscore_control_logit2 <- nsw_dw_cpscontrol_logit %>%
   filter(treat==0) %>%
   pull(pscore) %>%
   mean()
-pscore_control_logit <- nsw_dw_cpscontrol_logit %>%
+pscore_treated_logit2 <- nsw_dw_cpscontrol_logit %>%
   filter(treat==1) %>%
   pull(pscore) %>%
   mean()
 
-pscore_control_ols <- nsw_dw_cpscontrol_ols %>%
+pscore_control_ols2 <- nsw_dw_cpscontrol_ols %>%
   filter(treat==0) %>%
   pull(pscore) %>%
   mean()
-pscore_control_ols <- nsw_dw_cpscontrol_ols %>%
+pscore_treated_ols2 <- nsw_dw_cpscontrol_ols %>%
   filter(treat==1) %>%
   pull(pscore) %>%
   mean()
@@ -185,7 +187,7 @@ mean0log <- nsw_dw_cpscontrol_logit %>%
 nsw_dw_cpscontrol_logit$y0 <- mean0log
 
 atelog <- unique(nsw_dw_cpscontrol_logit$y1 - nsw_dw_cpscontrol_logit$y0)
-
+atelog
 ## ATE OLS 
 nsw_dw_cpscontrol_ols %>% 
   filter(treat == 1) %>% 
@@ -207,10 +209,10 @@ mean0ols <- nsw_dw_cpscontrol_ols %>%
   pull(re78) %>% 
   mean()
 
-nsw_dw_cpscontrol_ols$y0 <- mean00ls
+nsw_dw_cpscontrol_ols$y0 <- mean0ols
 
 ateols <- unique(nsw_dw_cpscontrol_ols$y1 - nsw_dw_cpscontrol_ols$y0)
-
+ateols
 #3
 ##Differencing and weighting LOGIT
 #- Manual with non-normalized weights using trimmed data

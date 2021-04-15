@@ -54,8 +54,8 @@ hisp + re74 + re74^2 + re74^3 + re75 + re75^2 + re75^3 + u74 + u75 + educ*hisp +
 logit <- glm(treat ~ age + agesq + agecube + educ + educsq
                      + educcube + marr + nodegree
                      + black + hisp + re74 + re74sq + re74cube 
-                     + re75 + re75sq + re75cube + u74 + u75 +
-                       interaction1, family = binomial(link =
+                     + re75 + re75sq + re75cube + u74 + u75,
+                      family = binomial(link =
                       "logit"), data = nsw_dw_cpscontrol_logit)
 ```
 $$ols(treat) = age + age^2 + educ + educ^2 + marr + nodegree + black + 
@@ -64,7 +64,7 @@ hisp + re74 + re74^2 + re75 + re75^2 + u74 + u75 + educ*hisp + \epsilon$$
 ```{r}
 ols <- lm(treat ~ age + agesq + agecube + educ + marr + 
                     nodegree+ black + hisp + re74 + re74sq
-                     + re75 + re75sq + u74 + u75 + interaction1,
+                     + re75 + re75sq + u74 + u75,
                   data = nsw_dw_cpscontrol_ols)
 ```
 The following table provides the output of both the OLS and the Logit regression estimates from the equations above. 
@@ -94,7 +94,7 @@ pscore_control_logit <- nsw_dw_cpscontrol_logit %>%
   filter(treat==0) %>%
   pull(pscore) %>%
   mean()
-pscore_control_logit <- nsw_dw_cpscontrol_logit %>%
+pscore_treat_logit <- nsw_dw_cpscontrol_logit %>%
   filter(treat==1) %>%
   pull(pscore) %>%
   mean()
@@ -103,11 +103,13 @@ pscore_control_ols <- nsw_dw_cpscontrol_ols %>%
   filter(treat==0) %>%
   pull(pscore) %>%
   mean()
-pscore_control_ols <- nsw_dw_cpscontrol_ols %>%
+pscore_treat_ols <- nsw_dw_cpscontrol_ols %>%
   filter(treat==1) %>%
   pull(pscore) %>%
   mean()
 ```
+##include table of the means of propensity scores for the treated and control for ols and logit 
+
 1.c. The following are the histograms for the mean p-scores of the logit and ols models for both models treated and untreated groups. 
 ```{r}
 nsw_dw_cpscontrol_logit %>% 
@@ -151,20 +153,20 @@ No <- nrow(nsw_dw_cpscontrol_ols)
 
 ```{r}
 
-pscore_control_logit <- nsw_dw_cpscontrol_logit %>%
+pscore_control_logit2 <- nsw_dw_cpscontrol_logit %>%
   filter(treat==0) %>%
   pull(pscore) %>%
   mean()
-pscore_control_logit <- nsw_dw_cpscontrol_logit %>%
+pscore_treated_logit2 <- nsw_dw_cpscontrol_logit %>%
   filter(treat==1) %>%
   pull(pscore) %>%
   mean()
 
-pscore_control_ols <- nsw_dw_cpscontrol_ols %>%
+pscore_control_ols2 <- nsw_dw_cpscontrol_ols %>%
   filter(treat==0) %>%
   pull(pscore) %>%
   mean()
-pscore_control_ols <- nsw_dw_cpscontrol_ols %>%
+pscore_treated_ols2 <- nsw_dw_cpscontrol_ols %>%
   filter(treat==1) %>%
   pull(pscore) %>%
   mean()
