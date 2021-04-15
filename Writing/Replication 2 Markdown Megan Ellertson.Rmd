@@ -15,8 +15,14 @@ library(tidyverse)
 library(haven)
 library(stargazer)
 library(foreign)
+library(kableExtra)
+library(readr)
+library(tidyr)
+library(AICcmodavg)
+library(broom)
+library(corrr)
 ```
-*The data combined was completed in STATA then brought into R for quicker computation. See the following STATA syntax, which was used to create the combined and used data set for the analysis.*
+
 
 
 ```{r}
@@ -80,22 +86,45 @@ $$ols(treat) = age + age^2 + educ + educ^2 + marr + nodegree + black +
 hisp + re74 + re74^2 + re75 + re75^2 + u74 + u75 + educ*hisp + \epsilon$$
 
 ```{r}
+logit %>%
+  tidy() %>%
+  mutate(
+    p.value = scales::pvalue(p.value),
+    term = c("Intercept", "age", "agesq", "agecube", "educ", "educsq",
+             "educcube", "marr", "nodegree", "black", "hisp", "re74",
+             "re74sq", "re74cube", "re75", "re75sq", "re75cube", "u74", 
+             "u75")
+  ) %>%
+  kable( 
+    caption= "Logit Model",
+    col.names = c("Predictor", "B", "SE", "t", "p"),
+    digits = c(0, 2, 3, 2, 3)
+  )
+```
+
+```{r}
 ols <- lm(treat ~ age + agesq + agecube + educ + + educsq +
             marr + nodegree+ black + hisp + re74 + re74sq
           + re75 + re75sq + u74 + u75,
           data = nsw_dw_cpscontrol_ols)
 ```
-The following table provides the output of both the OLS and the Logit regression estimates from the equations above. 
+
 ```{r}
-stargazer(ols, logit, 
-          type = "html",
-          title = ,
-          column.labels = c(""),
-          colnames = FALSE,
-          covariate.labels = c(""),
-          keep.state = c("rsq", "f"),
-          )
+ols %>%
+  tidy() %>%
+  mutate(
+    p.value = scales::pvalue(p.value),
+    term = c("Intercept", "age", "agesq", "educ", "educsq",
+             "marr", "nodegree", "black", "hisp", "re74",
+             "re74sq", "re75", "re75sq",  "u74", "u75")
+  ) %>%
+  kable( 
+    caption= "OLS Model",
+    col.names = c("Predictor", "B", "SE", "t", "p"),
+    digits = c(0, 2, 3, 2, 3)
+  )
 ```
+
 
 ```{r}
 nsw_dw_cpscontrol_logit <- nsw_dw_cpscontrol_logit %>% 
