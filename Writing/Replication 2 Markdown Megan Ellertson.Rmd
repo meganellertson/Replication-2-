@@ -155,7 +155,19 @@ pscore_treat_ols <- nsw_dw_cpscontrol_ols %>%
   pull(pscore) %>%
   mean()
 ```
-##include table of the means of propensity scores for the treated and control for ols and logit 
+
+```{r}
+
+tablea <- data.frame(
+  Groups = c("Logit Control", "Logit Treat",
+             "OLS Control", "OLS Treat"),
+  Means = c(pscore_control_logit, pscore_treat_logit,
+       pscore_control_ols, pscore_treat_ols)
+)
+tablea
+
+```
+
 
 1.c. The following are the histograms for the mean p-scores of the logit and ols models for both models treated and untreated groups. 
 ```{r}
@@ -218,6 +230,17 @@ pscore_treated_ols2 <- nsw_dw_cpscontrol_ols %>%
   pull(pscore) %>%
   mean()
 ```
+
+```{r}
+tableb <- data.frame(
+  Groups = c("Logit Control", "Logit Treat",
+             "OLS Control", "OLS Treat"),
+  Means = c(pscore_control_logit2, pscore_treat_logit2,
+       pscore_control_ols2, pscore_treat_ols2)
+)
+tableb
+```
+
 
 ```{r}
 nsw_dw_cpscontrol_logit %>% 
