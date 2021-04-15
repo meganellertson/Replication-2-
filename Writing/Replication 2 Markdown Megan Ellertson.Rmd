@@ -46,8 +46,8 @@ nsw_dw_cpscontrol_ols <- nsw_dw_cpscontrol %>%
          re75quad = re74^4)
 ```
 
-1. 
-a. The following equations are for the logit and OLS versions of the basic equation provided in the mixtape nsq_pscore.do. This expands off the basic logit provided. 
+1a.
+The following equations are for the logit and OLS versions of the basic equation provided in the mixtape nsq_pscore.do. This expands off the basic logit provided. 
 $$logit(treat)= age + age^2 + age^3 + educ + educ^2 + + educ^3 +marr + nodegree + black + 
 hisp + re74 + re74^2 + re74^3 + re75 + re75^2 + re75^3 + u74 + u75 + educ*hisp + \epsilon$$
 ```{r}

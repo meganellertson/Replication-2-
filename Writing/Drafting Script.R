@@ -12,6 +12,7 @@ read_data <- function(df)
 
 cps_mixtape <- read_dta("Data/cps_mixtape.dta")
 nsw_mixtape <- read_dta("Data/nsw_mixtape.dta")
+
 dataset <- read_dta("Data/combineddata.dta")
 
 nsw_dw_cpscontrol <- dataset %>% 
@@ -43,8 +44,8 @@ logit_nsw_basic <- glm(treat ~ age + agesq + agecube + educ + educsq +
 logit <- glm(treat ~ age + agesq + agecube + educ + educsq
                      + educcube + marr + nodegree
                      + black + hisp + re74 + re74sq + re74cube 
-                     + re75 + re75sq + re75cube + u74 + u75 +
-                       interaction1, family = binomial(link = "logit"),
+                     + re75 + re75sq + re75cube + u74 + u75
+                      , family = binomial(link = "logit"),
                      data = nsw_dw_cpscontrol_logit)
 #basic ols model 
 ols_nsw_basic <- lm(treat ~ age + agesq + agecube + educ + educsq + 
@@ -54,7 +55,7 @@ ols_nsw_basic <- lm(treat ~ age + agesq + agecube + educ + educsq +
 # advanced ols model
 ols <- lm(treat ~ age + agesq + agecube + educ + marr + 
                     nodegree+ black + hisp + re74 + re74sq
-                     + re75 + re75sq + u74 + u75 + interaction1,
+                     + re75 + re75sq + u74 + u75 ,
                   data = nsw_dw_cpscontrol_ols)
 #1c.
 #Creating fitted values and pscores 
