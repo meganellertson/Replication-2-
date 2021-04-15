@@ -20,13 +20,30 @@ library(foreign)
 
 
 ```{r}
-download.file(url = "https://github.com/meganellertson/Replication-2-/blob/main/Data/combineddata.dta", 
-  destfile = "combineddata.dta")
+read_data <- function(df)
+{
+  full_path <- paste("https://raw.github.com/scunning1975/mixtape/master/", 
+                     df, sep = "")
+  df <- read_dta(full_path)
+  return(df)
+}
 
 ```
 
 ```{r}
-nsw_dw_cpscontrol <- combineddata %>% 
+cps_mixtape <- read_data("cps_mixtape.dta") 
+nsw_mixtape <- read_data("nsw_mixtape.dta")
+```
+
+```{r}
+edited <- nsw_mixtape %>%
+  filter(!treat == 0)
+combo <- rbind(cps_mixtape, edited)
+```
+
+
+```{r}
+nsw_dw_cpscontrol <- combo %>% 
   mutate(agesq = age^2,
          agecube = age^3,
          educsq = educ*educ,
@@ -63,10 +80,10 @@ $$ols(treat) = age + age^2 + educ + educ^2 + marr + nodegree + black +
 hisp + re74 + re74^2 + re75 + re75^2 + u74 + u75 + educ*hisp + \epsilon$$
 
 ```{r}
-ols <- lm(treat ~ age + agesq + agecube + educ + marr + 
-                    nodegree+ black + hisp + re74 + re74sq
-                     + re75 + re75sq + u74 + u75,
-                  data = nsw_dw_cpscontrol_ols)
+ols <- lm(treat ~ age + agesq + agecube + educ + + educsq +
+            marr + nodegree+ black + hisp + re74 + re74sq
+          + re75 + re75sq + u74 + u75,
+          data = nsw_dw_cpscontrol_ols)
 ```
 The following table provides the output of both the OLS and the Logit regression estimates from the equations above. 
 ```{r}
@@ -198,7 +215,64 @@ nsw_dw_cpscontrol_ols %>%
   geom_histogram(aes(x = pscore))
 ```
 DESCRIBE THE SHAPE OF THE HISTOGRAMS, THE MIN AND MAX VALUES OF BOTH THE CONTROL AND TREATMENT GROUP. 
+#2
+```{r}
+##ATE Logit 
+nsw_dw_cpscontrol_logit %>% 
+  filter(treat == 1) %>% 
+  summary(re78)
 
+mean1log <- nsw_dw_cpscontrol_logit %>% 
+  filter(treat == 1) %>% 
+  pull(re78) %>% 
+  mean()
+
+nsw_dw_cpscontrol_logit$y1 <- mean1log
+
+nsw_dw_cpscontrol_logit %>% 
+  filter(treat == 0) %>% 
+  summary(re78)
+
+mean0log <- nsw_dw_cpscontrol_logit %>% 
+  filter(treat == 0) %>% 
+  pull(re78) %>% 
+  mean()
+
+nsw_dw_cpscontrol_logit$y0 <- mean0log
+
+atelog <- unique(nsw_dw_cpscontrol_logit$y1 - nsw_dw_cpscontrol_logit$y0)
+atelog
+```
+
+```{r}
+## ATE OLS 
+nsw_dw_cpscontrol_ols %>% 
+  filter(treat == 1) %>% 
+  summary(re78)
+
+mean1ols <- nsw_dw_cpscontrol_ols %>% 
+  filter(treat == 1) %>% 
+  pull(re78) %>% 
+  mean()
+
+nsw_dw_cpscontrol_ols$y1 <- mean1ols
+
+nsw_dw_cpscontrol_ols %>% 
+  filter(treat == 0) %>% 
+  summary(re78)
+
+mean0ols <- nsw_dw_cpscontrol_ols %>% 
+  filter(treat == 0) %>% 
+  pull(re78) %>% 
+  mean()
+
+nsw_dw_cpscontrol_ols$y0 <- mean0ols
+
+ateols <- unique(nsw_dw_cpscontrol_ols$y1 - nsw_dw_cpscontrol_ols$y0)
+ateols
+```
+
+#3
 The following is the 
 ```{r}
 #- Manual with non-normalized weights using trimmed data Logit

@@ -53,7 +53,7 @@ ols_nsw_basic <- lm(treat ~ age + agesq + agecube + educ + educsq +
                          u75 + interaction1, 
                        data = nsw_dw_cpscontrol_ols)
 # advanced ols model
-ols <- lm(treat ~ age + agesq + agecube + educ + marr + 
+ols <- lm(treat ~ age + agesq + agecube + educ + educsq + marr + 
                     nodegree+ black + hisp + re74 + re74sq
                      + re75 + re75sq + u74 + u75 ,
                   data = nsw_dw_cpscontrol_ols)
