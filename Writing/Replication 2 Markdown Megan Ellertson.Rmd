@@ -20,12 +20,13 @@ library(foreign)
 
 
 ```{r}
+download.file(url = "https://github.com/meganellertson/Replication-2-/blob/main/Data/combineddata.dta", 
+  destfile = "combineddata.dta")
 
-dataset <- read.dta("Replication -2-/Data/combineddata.dta")
 ```
 
 ```{r}
-nsw_dw_cpscontrol <- dataset %>% 
+nsw_dw_cpscontrol <- combineddata %>% 
   mutate(agesq = age^2,
          agecube = age^3,
          educsq = educ*educ,
