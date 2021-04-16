@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## Replication 2
-```{r}
+```{r echo=FALSE, warning=FALSE}
 library(tidyverse)
 library(haven)
 library(stargazer)
@@ -25,7 +25,7 @@ library(corrr)
 
 
 
-```{r}
+```{r echo=FALSE, warning=FALSE}
 read_data <- function(df)
 {
   full_path <- paste("https://raw.github.com/scunning1975/mixtape/master/", 
@@ -36,20 +36,21 @@ read_data <- function(df)
 
 ```
 
-```{r}
+```{r echo=FALSE, warning=FALSE}
 cps_mixtape <- read_data("cps_mixtape.dta") 
 nsw_mixtape <- read_data("nsw_mixtape.dta")
 ```
 
-```{r}
+```{r echo=FALSE, warning=FALSE}
 edited <- nsw_mixtape %>%
   filter(!treat == 0)
 combo <- rbind(cps_mixtape, edited)
 ```
-
+#1. 
+The following provides the code for the data formatting which is necessary prior to the analysis. Covariates which were to be included in both the Logit and OLS models were included in the first portion (plugged into the "control" dataset). The covariates specific to the Probit (cubed) and OLS (quadratic) were then separated into two different dataframe's to keep the analysis separate. 
 
 ```{r}
-nsw_dw_cpscontrol <- combo %>% 
+control <- combo %>% 
   mutate(agesq = age^2,
          agecube = age^3,
          educsq = educ*educ,
@@ -59,15 +60,14 @@ nsw_dw_cpscontrol <- combo %>%
          re74sq = re74^2,
          re75sq = re75^2,
          interaction2 = u74*hisp)
-#Creating logit data 
-nsw_dw_cpscontrol_logit <- nsw_dw_cpscontrol %>%
+#Logit related dataframe
+nsw_dw_cpscontrol_logit <- control %>%
   mutate(educcube = educ^3,
          re74cube=re74^3, 
          re75cube=re75^3)
-#Creating ols data
-nsw_dw_cpscontrol_ols <- nsw_dw_cpscontrol %>%
-  mutate(re74quad = re74^4,
-         re75quad = re74^4)
+#OLS related dataframe 
+nsw_dw_cpscontrol_ols <- control 
+  
 ```
 
 1a.

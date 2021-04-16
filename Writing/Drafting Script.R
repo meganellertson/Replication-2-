@@ -86,7 +86,15 @@ pscore_treat_ols <- nsw_dw_cpscontrol_ols %>%
   pull(pscore) %>%
   mean()
 
-
+##Creating tables
+a <- c(pscore_control_logit, pscore_control_ols, 
+       pscore_treat_logit, pscore_treat_ols)
+# round columns separately
+knitr::kable(a, digits = c(5, 0, 2))
+a <- c(pscore_control_logit, pscore_control_ols, 
+       pscore_treat_logit, pscore_treat_ols)
+# round columns separately
+knitr::kable(a, digits = c(5, 0, 2))
 
 #Histograms 
 nsw_dw_cpscontrol_logit %>% 
