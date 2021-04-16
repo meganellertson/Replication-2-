@@ -221,7 +221,24 @@ nsw_dw_cpscontrol_ols$y0 <- mean0ols
 
 ateols <- unique(nsw_dw_cpscontrol_ols$y1 - nsw_dw_cpscontrol_ols$y0)
 ateols
+########################
+
+sdologit <- nsw_dw_cpscontrol_logit %>% 
+  mutate(d = case_when(treat == 1 ~ 1, TRUE ~ 0))
+
+ey1logit <- sdologit %>% 
+  filter(d == 1) %>%
+  pull(re78) %>% 
+  mean()
+
+ey0logit <- sdologit %>% 
+  filter(d == 0) %>%
+  pull(re78) %>% 
+  mean()
+
+sdo <- ey1logit - ey0logit 
 #3
+
 ##Differencing and weighting LOGIT
 #- Manual with non-normalized weights using trimmed data
 nsw_dw_cpscontrol_logit <- nsw_dw_cpscontrol_logit %>% 
