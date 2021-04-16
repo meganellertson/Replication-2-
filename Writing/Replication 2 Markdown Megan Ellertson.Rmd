@@ -47,9 +47,10 @@ edited <- nsw_mixtape %>%
 combo <- rbind(cps_mixtape, edited)
 ```
 #1. 
+##Data Prep
 The following provides the code for the data formatting which is necessary prior to the analysis. Covariates which were to be included in both the Logit and OLS models were included in the first portion (plugged into the "control" dataset). The covariates specific to the Probit (cubed) and OLS (quadratic) were then separated into two different dataframe's to keep the analysis separate. 
 
-```{r}
+```{r echo=TRUE, warning=FALSE}
 control <- combo %>% 
   mutate(agesq = age^2,
          agecube = age^3,
@@ -70,22 +71,23 @@ nsw_dw_cpscontrol_ols <- control
   
 ```
 
-1a.
-The following equations are for the logit and OLS versions of the basic equation provided in the mixtape nsq_pscore.do. This expands off the basic logit provided. 
+##a & b
+The following equations are for the logit and OLS versions of the basic equation provided in the mixtape nsw_pscore.do. This expands off the basic logit provided. 
+
+The following model is the Logit model which includes through the cubed polynomial of each non-binary variable from the basic equation provided. 
 $$logit(treat)= age + age^2 + age^3 + educ + educ^2 + + educ^3 +marr + nodegree + black + 
 hisp + re74 + re74^2 + re74^3 + re75 + re75^2 + re75^3 + u74 + u75 + educ*hisp + \epsilon$$
-```{r}
+```{r echo=TRUE}
 logit <- glm(treat ~ age + agesq + agecube + educ + educsq
                      + educcube + marr + nodegree
-                     + black + hisp + re74 + re74sq + re74cube 
+                     + black + hisp + re74 + re74sq +re74cube
                      + re75 + re75sq + re75cube + u74 + u75,
                       family = binomial(link =
                       "logit"), data = nsw_dw_cpscontrol_logit)
 ```
-$$ols(treat) = age + age^2 + educ + educ^2 + marr + nodegree + black + 
-hisp + re74 + re74^2 + re75 + re75^2 + u74 + u75 + educ*hisp + \epsilon$$
+Running this Logit regression provides the following output table. Each of the included variables except for the education related variables are statistically significant. 
 
-```{r}
+```{r echo=FALSE}
 logit %>%
   tidy() %>%
   mutate(
@@ -101,15 +103,18 @@ logit %>%
     digits = c(0, 2, 3, 2, 3)
   )
 ```
+The following model is the OLS regression and version which will be included along with the Logit model. This includes the covariates from the basic model up to the squared polynomial, and not including the binary covariates with a polynomial version. Note that the cube polynomial of the age covariate is kept in the analysis because it was included in the basic model.  
+$$ols(treat) = age + age^2 + educ + educ^2 + marr + nodegree + black + 
+hisp + re74 + re74^2 + re75 + re75^2 + u74 + u75 + educ*hisp + \epsilon$$
 
-```{r}
+```{r echo=TRUE}
 ols <- lm(treat ~ age + agesq + agecube + educ + + educsq +
             marr + nodegree+ black + hisp + re74 + re74sq
           + re75 + re75sq + u74 + u75,
           data = nsw_dw_cpscontrol_ols)
 ```
 
-```{r}
+```{r echo=TRUE}
 ols %>%
   tidy() %>%
   mutate(
@@ -125,9 +130,11 @@ ols %>%
     digits = c(0, 2, 3, 2, 3)
   )
 ```
+In the OLS version of the model, more of the included variables are statistically significant compared to the Logit model. Only the "re74" covariate is not statistically significant. 
 
-
-```{r}
+## c.
+To map out the p-scores for the Logit and OLS models, the fitted values of the regressions are taken respectively. How this was done with the syntax is provided below:
+```{r echo=TRUE, warning=FALSE}
 nsw_dw_cpscontrol_logit <- nsw_dw_cpscontrol_logit %>% 
   mutate(pscore = logit$fitted.values)
 
@@ -135,8 +142,7 @@ nsw_dw_cpscontrol_logit <- nsw_dw_cpscontrol_logit %>%
 nsw_dw_cpscontrol_ols <- nsw_dw_cpscontrol_ols %>% 
   mutate(pscore = ols$fitted.values)
 ```
-
-
+The means of these p-scores for both the Logit and the OLS models are determined for the treated and control groups. The mean of these p-scores amung the two groups for each model are provided in the table below. The Logit treated is at about 0.4 while the control group is far lower. The OLS is also skewed far lower than the more centered Logit output. 
 ```{r}
 pscore_control_logit <- nsw_dw_cpscontrol_logit %>%
   filter(treat==0) %>%
@@ -168,10 +174,8 @@ tablea <- data.frame(
 tablea
 
 ```
-
-
-1.c. The following are the histograms for the mean p-scores of the logit and ols models for both models treated and untreated groups. 
-```{r}
+To see further into what the p-score distribution looks like for the treated and control groups of each model the following histograms provide a more easily understood visual representation. 
+```{r echo=TRUE fig.width = 3 fig.height = 3 warning = FALSE}
 nsw_dw_cpscontrol_logit %>% 
   filter(treat == 0) %>% 
   ggplot() +
@@ -182,9 +186,10 @@ nsw_dw_cpscontrol_logit %>%
   ggplot() +
   geom_histogram(aes(x = pscore))
 ```
+The two histograms above represent first the control p-score distribution and the treated distribution. The control group for the Logit model is highly skewed to the left. There is a vast amount of bunching around 0. Where the minimum value appears to go below 0 but really sit right at 0. The maximum value is around the 0.25. The treatment p-score distribution is far more evenly distributed across the frame. The histogram ranges from just below 0 to 1 and is distributed across the range in a non-uniform manner. 
 
-```{r}
-
+The following provides the histograms for the treated and control OLS model p-scores. 
+```{r echo=TRUE fig.width = 3 fig.height = 3 warning = FALSE}
 nsw_dw_cpscontrol_ols %>% 
   filter(treat == 0) %>% 
   ggplot() +
@@ -195,8 +200,9 @@ nsw_dw_cpscontrol_ols %>%
   ggplot() +
   geom_histogram(aes(x = pscore))
 ```
-DISCUSS THE SHAPE AND DISTRIBUTIONMN AND MAX VALUES FOR TREATMENT GROUP AND THE CONTROL GROUPS. 
-1.d. The pscores which are less than 0.1 and greater than 0.9 can then be dropped and the histograms recalibarated with the trimmed pscores. 
+The first histogram represents the control distribution. This is centered around 0 and has a loosely normal shaped distribution. There are far more values below 0 in this histogram an the prior histograms. The minimum appears to be around -0.05 and the maximum is just below 0.2. The second histogram is the treatment group distribution. This distribution appears to be skewed to the right side. The maximum values appear to be just above 0.2 (around 0.21) while the minimum is just below 0. The distribution is more weighted toward the higher end of the distribution with a peak around 0.18. 
+## d.
+The p-scores which are less than 0.1 and greater than 0.9 can then be dropped and the histograms recalibarated with the trimmed p-scores. 
 ```{r}
 nsw_dw_cpscontrol_logit <- nsw_dw_cpscontrol_logit %>% 
   filter(!(pscore >= 0.9)) %>% 
