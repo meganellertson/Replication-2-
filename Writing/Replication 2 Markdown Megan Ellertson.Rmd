@@ -1,16 +1,17 @@
 ---
-title: "Replication 2 Megan Ellertson"
+title: "Replication 2"
 author: "Megan Ellertson"
+class: "Causal Inference"
+Professor: "Dr. Cunningham"
 date: "4/11/2021"
-output: html_document
+output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Replication 2
-```{r echo=FALSE, warning=FALSE}
+```{r echo=FALSE, warning=FALSE, message=FALSE}
 library(tidyverse)
 library(haven)
 library(stargazer)
@@ -46,9 +47,11 @@ edited <- nsw_mixtape %>%
   filter(!treat == 0)
 combo <- rbind(cps_mixtape, edited)
 ```
-#1. 
-##Data Prep
-The following provides the code for the data formatting which is necessary prior to the analysis. Covariates which were to be included in both the Logit and OLS models were included in the first portion (plugged into the "control" dataset). The covariates specific to the Probit (cubed) and OLS (quadratic) were then separated into two different dataframe's to keep the analysis separate. 
+# 1. 
+
+## Data Prep
+
+The following provides the code for the data formatting which is necessary prior to the analysis. Covariates which were to be included in both the Logit and OLS models were included in the first portion (plugged into the "control" dataset). The covariates specific to the Logit (cubed) and OLS (quadratic) were then separated into two different dataframe's to keep the analysis separate. 
 
 ```{r echo=TRUE, warning=FALSE}
 control <- combo %>% 
@@ -71,19 +74,21 @@ nsw_dw_cpscontrol_ols <- control
   
 ```
 
-##a & b
+## a & b
 The following equations are for the logit and OLS versions of the basic equation provided in the mixtape nsw_pscore.do. This expands off the basic logit provided. 
 
 The following model is the Logit model which includes through the cubed polynomial of each non-binary variable from the basic equation provided. 
-$$logit(treat)= age + age^2 + age^3 + educ + educ^2 + + educ^3 +marr + nodegree + black + 
-hisp + re74 + re74^2 + re74^3 + re75 + re75^2 + re75^3 + u74 + u75 + educ*hisp + \epsilon$$
+$$logit(treat)= age + age^2 + age^3 + educ + educ^2 + educ^3 +marr + nodegree + black + 
+hisp + re74 + re74^2 + re74^3 + re75 + re75^2 + 
+re75^3 + u74 + u75 + \epsilon$$
 ```{r echo=TRUE}
 logit <- glm(treat ~ age + agesq + agecube + educ + educsq
                      + educcube + marr + nodegree
                      + black + hisp + re74 + re74sq +re74cube
                      + re75 + re75sq + re75cube + u74 + u75,
                       family = binomial(link =
-                      "logit"), data = nsw_dw_cpscontrol_logit)
+                      "logit"), data = 
+               nsw_dw_cpscontrol_logit)
 ```
 Running this Logit regression provides the following output table. Each of the included variables except for the education related variables are statistically significant. 
 
@@ -104,10 +109,10 @@ logit %>%
   )
 ```
 The following model is the OLS regression and version which will be included along with the Logit model. This includes the covariates from the basic model up to the squared polynomial, and not including the binary covariates with a polynomial version. Note that the cube polynomial of the age covariate is kept in the analysis because it was included in the basic model.  
-$$ols(treat) = age + age^2 + educ + educ^2 + marr + nodegree + black + 
-hisp + re74 + re74^2 + re75 + re75^2 + u74 + u75 + educ*hisp + \epsilon$$
+$$ols(treat) = age + age^2 + age^3 + educ + educ^2 + marr + nodegree + black + 
+hisp + re74 + re74^2 + re75 + re75^2 + u74 + u75 + \epsilon$$
 
-```{r echo=TRUE}
+```{r echo=TRUE, tidy=TRUE}
 ols <- lm(treat ~ age + agesq + agecube + educ + + educsq +
             marr + nodegree+ black + hisp + re74 + re74sq
           + re75 + re75sq + u74 + u75,
@@ -134,7 +139,7 @@ In the OLS version of the model, more of the included variables are statisticall
 
 ## c.
 To map out the p-scores for the Logit and OLS models, the fitted values of the regressions are taken respectively. How this was done with the syntax is provided below:
-```{r echo=TRUE, warning=FALSE}
+```{r echo=TRUE}
 nsw_dw_cpscontrol_logit <- nsw_dw_cpscontrol_logit %>% 
   mutate(pscore = logit$fitted.values)
 
@@ -143,7 +148,7 @@ nsw_dw_cpscontrol_ols <- nsw_dw_cpscontrol_ols %>%
   mutate(pscore = ols$fitted.values)
 ```
 The means of these p-scores for both the Logit and the OLS models are determined for the treated and control groups. The mean of these p-scores amung the two groups for each model are provided in the table below. The Logit treated is at about 0.4 while the control group is far lower. The OLS is also skewed far lower than the more centered Logit output. 
-```{r}
+```{r, echo=TRUE}
 pscore_control_logit <- nsw_dw_cpscontrol_logit %>%
   filter(treat==0) %>%
   pull(pscore) %>%
@@ -163,7 +168,7 @@ pscore_treat_ols <- nsw_dw_cpscontrol_ols %>%
   mean()
 ```
 
-```{r}
+```{r echo=FALSE}
 
 tablea <- data.frame(
   Groups = c("Logit Control", "Logit Treat",
@@ -175,7 +180,7 @@ tablea
 
 ```
 To see further into what the p-score distribution looks like for the treated and control groups of each model the following histograms provide a more easily understood visual representation. 
-```{r echo=TRUE warning = FALSE}
+```{r echo=TRUE}
 nsw_dw_cpscontrol_logit %>% 
   filter(treat == 0) %>% 
   ggplot() +
@@ -189,7 +194,7 @@ nsw_dw_cpscontrol_logit %>%
 The two histograms above represent first the control p-score distribution and the treated distribution. The control group for the Logit model is highly skewed to the left. There is a vast amount of bunching around 0. Where the minimum value appears to go below 0 but really sit right at 0. The maximum value is around the 0.25. The treatment p-score distribution is far more evenly distributed across the frame. The histogram ranges from just below 0 to 1 and is distributed across the range in a non-uniform manner. 
 
 The following provides the histograms for the treated and control OLS model p-scores. 
-```{r echo=TRUE warning = FALSE}
+```{r echo=TRUE}
 nsw_dw_cpscontrol_ols %>% 
   filter(treat == 0) %>% 
   ggplot() +
@@ -248,7 +253,7 @@ tableb
 ```
 
 
-```{r echo=TRUE warning = FALSE}
+```{r echo=TRUE }
 nsw_dw_cpscontrol_logit %>% 
   filter(treat == 0) %>% 
   ggplot() +
@@ -260,7 +265,7 @@ nsw_dw_cpscontrol_logit %>%
   geom_histogram(aes(x = pscore))
 ```
 The histograms above represent the trimmed version of the p-score distributions which were generated by the Logit model. This changes the distribution of the histograms from the untrimmed version of the data. Now the minimum values for both the control and treatment groups are 0.1 and maximums of 0.9. For the treatment group the distribution looks very similar. Just values at the very ends of the fairly even distribution have been cut therefore it would make sense that the histogram looks similar. However, the control group distribution is significantly different than the untrimmed version. This is due to the fact that the previous was surrounding right where the cutoff of the trimming exists. Therefore a lot of items were dropped. The distribution is skewed in the same direction but less extreme.   
-```{r echo=TRUE warning = FALSE}
+```{r echo=TRUE}
 nsw_dw_cpscontrol_ols %>% 
   filter(treat == 0) %>% 
   ggplot() +
@@ -272,7 +277,7 @@ nsw_dw_cpscontrol_ols %>%
   geom_histogram(aes(x = pscore))
 ```
 The histograms above represent the trimmed OLS control and treatment group p-score distributions. The control group now has a minimum of 0.1 and a maximum of just below 0.21.  This distribution is skewed at the lower end. This makes sense with the process of the trimming. Much of the data was at or below the 0.1 cutoff. Therefore, much of the values in the control group were dropped with the trimming. The shape of the distribution remains the same. The treatment group is now has a minimum value of 0.1 and a maximum value of just below 0.21 similar to the control group. The untrimmed version was skewed to the higher end, while this distribution is a little more spread across the range. 
-#2
+# 2
 The first differencing compares the outcomes of the trimmed data provides the ATE output. This provides the first difference.  
 ```{r echo = TRUE}
 nsw_dw_cpscontrol_logit %>% 
@@ -287,8 +292,9 @@ mean1log <- nsw_dw_cpscontrol_logit %>%
 nsw_dw_cpscontrol_logit$y1 <- mean1log
 
 nsw_dw_cpscontrol_logit %>% 
-  filter(treat == 0) %>% 
+  filter(treat == 0)%>% 
   summary(re78)
+  
 
 mean0log <- nsw_dw_cpscontrol_logit %>% 
   filter(treat == 0) %>% 
@@ -335,7 +341,7 @@ The following is for the OLS model.
 ateols
 ```
 
-#3
+# 3
 The following is the code syntax for the Logit model weighted  with normalized and non normalized ATT calculations. The equation provided for the Abadie (2005) estimations is the non-normalized weights. This also uses the trimmed data. 
 ```{r echo=TRUE}
 nsw_dw_cpscontrol_logit <- nsw_dw_cpscontrol_logit %>% 
