@@ -310,6 +310,23 @@ The following is for the Logit model.
 ```{r echo=FALSE}
 atelog
 ```
+```{r}
+sdologit <- nsw_dw_cpscontrol_logit %>% 
+  mutate(d = case_when(treat == 1 ~ 1, TRUE ~ 0))
+
+ey1logit <- sdologit %>% 
+  filter(d == 1) %>%
+  pull(re78) %>% 
+  mean()
+
+ey0logit <- sdologit %>% 
+  filter(d == 0) %>%
+  pull(re78) %>% 
+  mean()
+
+sdologit <- ey1logit - ey0logit 
+```
+
 
 ```{r echo=TRUE}
 nsw_dw_cpscontrol_ols %>% 
@@ -340,6 +357,25 @@ The following is for the OLS model.
 ```{r echo=FALSE}
 ateols
 ```
+
+```{r}
+
+sdools <- nsw_dw_cpscontrol_ols %>% 
+  mutate(d = case_when(treat == 1 ~ 1, TRUE ~ 0))
+
+ey1ols <- sdools %>% 
+  filter(d == 1) %>%
+  pull(re78) %>% 
+  mean()
+
+ey0ols <- sdools %>% 
+  filter(d == 0) %>%
+  pull(re78) %>% 
+  mean()
+
+sdools <- ey1ols - ey0ols
+```
+
 
 # 3
 The following is the code syntax for the Logit model weighted  with normalized and non normalized ATT calculations. The equation provided for the Abadie (2005) estimations is the non-normalized weights. This also uses the trimmed data. 
