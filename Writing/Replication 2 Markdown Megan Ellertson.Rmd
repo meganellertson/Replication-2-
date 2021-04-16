@@ -273,7 +273,8 @@ nsw_dw_cpscontrol_ols %>%
 ```
 The histograms above represent the trimmed OLS control and treatment group p-score distributions. The control group now has a minimum of 0.1 and a maximum of just below 0.21.  This distribution is skewed at the lower end. This makes sense with the process of the trimming. Much of the data was at or below the 0.1 cutoff. Therefore, much of the values in the control group were dropped with the trimming. The shape of the distribution remains the same. The treatment group is now has a minimum value of 0.1 and a maximum value of just below 0.21 similar to the control group. The untrimmed version was skewed to the higher end, while this distribution is a little more spread across the range. 
 #2
-```{r}
+The first differencing compares the outcomes of the trimmed data provides the ATE output. This provides the first difference.  
+```{r echo = TRUE}
 nsw_dw_cpscontrol_logit %>% 
   filter(treat == 1) %>% 
   summary(re78)
@@ -297,11 +298,14 @@ mean0log <- nsw_dw_cpscontrol_logit %>%
 nsw_dw_cpscontrol_logit$y0 <- mean0log
 
 atelog <- unique(nsw_dw_cpscontrol_logit$y1 - nsw_dw_cpscontrol_logit$y0)
+
+```
+The following is for the Logit model. 
+```{r echo=FALSE}
 atelog
 ```
 
-```{r}
-## ATE OLS 
+```{r echo=TRUE}
 nsw_dw_cpscontrol_ols %>% 
   filter(treat == 1) %>% 
   summary(re78)
@@ -325,6 +329,9 @@ mean0ols <- nsw_dw_cpscontrol_ols %>%
 nsw_dw_cpscontrol_ols$y0 <- mean0ols
 
 ateols <- unique(nsw_dw_cpscontrol_ols$y1 - nsw_dw_cpscontrol_ols$y0)
+```
+The following is for the OLS model.
+```{r echo=FALSE}
 ateols
 ```
 
